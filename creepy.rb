@@ -63,6 +63,79 @@ module Creepy
       shell.error $!.message
     end
 
+    desc 'diff [TASK] [NAME], ...', '最新のデータと以前のデータの差分を計算'
+    def diff(task, *args)
+      case task
+      when 'friends'
+        user = args.shift
+        file_prefix = "#{user}_friends"
+      when 'list'
+        user, list_name = *args
+        file_prefix = "#{user}_#{list_name}"
+      else
+        raise SystemExit
+      end
+
+      files = Dir.glob("data/#{file_prefix}*")
+      raise SystemExit unless files.size >= 2
+
+      dest_path, source_path = *files.reverse
+      say "#{dest_path} と #{source_path} の差分を計算中..."
+
+      dest_time = dest_path.match(/\d+/).to_s
+      source_time = source_path.match(/\d+/).to_s
+      log_path = "log/#{file_prefix}_#{dest_time}_#{source_time}.log"
+      create_file log_path
+
+      dest   = YAML.load_file dest_path
+      source = YAML.load_file source_path
+
+      # id を key にして詰め替え
+      dest, source = [dest, source].map do |u|
+        users = {}
+        u.each {|v| users[v[:id]] = v }
+        users
+      end
+
+      # 新しいフォロー
+      dest.select {|id, u| !source.has_key? id }.each do |id, user|
+        tee "フォロー > @#{user[:screen_name]}", log_path
+      end
+
+      # アンフォロー または アカウント削除
+      source.select {|id, u| !dest.has_key? id }.each do |id, user|
+        begin
+          rubytter.user id
+          tee "アンフォロー > @#{user[:screen_name]}", log_path
+        rescue
+          tee "#{$!.message} > @#{user[:screen_name]}", log_path
+        end
+      end
+
+      # プロフィールの差分取得
+      dest.each do |id, dest_user|
+        next unless source.has_key? id
+
+        source_user = source[id]
+
+        [
+         {:key => :screen_name,       :name => 'スクリーンネーム'},
+         {:key => :name,              :name => '名前'},
+         {:key => :description,       :name => 'プロフィール'},
+         {:key => :location,          :name => '場所'},
+         {:key => :url,               :name => 'URL'},
+         {:key => :protected,         :name => '鍵'},
+         {:key => :profile_image_url, :name => 'アイコン'}
+        ].each do |data|
+          dest_data   = dest_user.send(:[], data[:key])
+          source_data = source_user.send(:[], data[:key])
+          if source_data && dest_data != source_data
+            tee "@#{dest_user[:screen_name]} #{data[:name]} > \"#{source_data}\" -> \"#{dest_data}\"", log_path
+          end
+        end
+      end
+    end
+
     private
     def process(method, description, *args)
       users, next_cursor, index = [], -1, 1
@@ -74,6 +147,13 @@ module Creepy
         index += 1
       end
       users
+    end
+
+    def tee(dest, path)
+      say dest
+      open(path, 'a') {|f| f.puts dest }
+    rescue
+      shell.error $!.message
     end
   end
 end
