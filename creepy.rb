@@ -89,7 +89,7 @@ module Creepy
         error! '[USER] を指定してください' unless args.size == 1
         user = args.shift
         file_prefix = "#{user}_friends"
-        description = "#{user} の フレンド"
+        description = "#{user} のフレンド"
       when :list
         error! '[USER] [LIST_NAME] を指定してください' unless args.size == 2
         user, list_name = *args
@@ -115,9 +115,7 @@ module Creepy
 
       # id を key にして詰め替え
       dest, source = [dest, source].map do |u|
-        users = {}
-        u.each {|v| users[v[:id]] = v }
-        users
+        {}.tap {|h| u.each {|v| h[v[:id]] = v } }
       end
 
       # 新しいフォロー
