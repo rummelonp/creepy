@@ -44,32 +44,40 @@ module Creepy
     include Thor::Actions
 
     desc 'friends [USER]', 'ユーザのフレンドを取得'
+    method_option :diff, :alias => '-d', :type => :boolean, :default => false, :desc => 'データを取得後に差分を計算する'
     def friends(user)
       description = "#{user} のフレンド"
       users = process(:friends, description, user)
       create_file "data/#{user}_friends_#{time}.yml", YAML.dump(users)
       say "#{description}を取得しました"
+      if options.diff?
+        diff :friends, user
+      end
     rescue
       shell.error $!.message
     end
 
     desc 'list [USER] [LIST_NAME]', 'リストに登録されているメンバーを取得'
+    method_option :diff, :alias => '-d', :type => :boolean, :default => false, :desc => 'データを取得後に差分を計算する'
     def list(user, list_name)
       description = "list #{user}/#{list_name} に登録されているメンバー"
       users = process(:list_members, description, user, list_name)
       create_file "data/#{user}_#{list_name}_#{time}.yml", YAML.dump(users)
       say "#{description}を取得しました"
+      if options.diff?
+        diff :list, user, list_name
+      end
     rescue
       shell.error $!.message
     end
 
     desc 'diff [TASK] [NAME], ...', '最新のデータと以前のデータの差分を計算'
     def diff(task, *args)
-      case task
-      when 'friends'
+      case task.to_sym
+      when :friends
         user = args.shift
         file_prefix = "#{user}_friends"
-      when 'list'
+      when :list
         user, list_name = *args
         file_prefix = "#{user}_#{list_name}"
       else
