@@ -4,12 +4,14 @@
 require 'rubygems'
 require 'bundler'
 Bundler.require
+require 'thor/group'
 require 'yaml'
 
-class Setup < Thor
+class Setup < Thor::Group
   include Thor::Actions
 
-  desc 'setup', 'Creepy のセットアップ'
+  desc 'Creepy のセットアップ'
+
   def setup
     begin
       config = YAML.load_file 'config.yml'
@@ -52,4 +54,4 @@ class Setup < Thor
   end
 end
 
-Setup.new.invoke :setup
+Setup.start
