@@ -1,13 +1,13 @@
 = Creepy
 
-ストーキングツール
+Twitterストーキングツール
 
 == 必要なもの
 
-Git
-Ruby 1.9.2
-Bundler
-TwitterのConsumerKey/ConsumerSecret
+    Git
+    Ruby 1.9.2
+    Bundler
+    TwitterのConsumerKey/ConsumerSecret
 
 == インストール
 
