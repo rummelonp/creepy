@@ -43,52 +43,67 @@ module Creepy
     include Creepy
     include Thor::Actions
 
+    class_option :help, :alias => '-h', :type => :boolean, :desc => "ヘルプを表示"
+
     desc 'friends [USER]', 'ユーザのフレンドを取得'
     method_option :diff, :alias => '-d', :type => :boolean, :default => false, :desc => 'データを取得後に差分を計算する'
-    def friends(user)
+    def friends(*args)
+      prepare :friends, args.size == 1
+      user = args.shift
+
       description = "#{user} のフレンド"
       users = process(:friends, description, user)
       create_file "data/#{user}_friends_#{time}.yml", YAML.dump(users)
       say "#{description}を取得しました"
+
       if options.diff?
         diff :friends, user
       end
     rescue
-      shell.error $!.message
+      error! $!.message
     end
 
     desc 'list [USER] [LIST_NAME]', 'リストに登録されているメンバーを取得'
     method_option :diff, :alias => '-d', :type => :boolean, :default => false, :desc => 'データを取得後に差分を計算する'
-    def list(user, list_name)
+    def list(*args)
+      prepare :list, args.size == 2
+      user, list_name = *args
+
       description = "list #{user}/#{list_name} に登録されているメンバー"
       users = process(:list_members, description, user, list_name)
       create_file "data/#{user}_#{list_name}_#{time}.yml", YAML.dump(users)
       say "#{description}を取得しました"
+
       if options.diff?
         diff :list, user, list_name
       end
     rescue
-      shell.error $!.message
+      error! $!.message
     end
 
     desc 'diff [TASK] [NAME], ...', '最新のデータと以前のデータの差分を計算'
-    def diff(task, *args)
-      case task.to_sym
+    def diff(*args)
+      prepare :diff, args.size >= 1
+      case args.shift.to_sym
       when :friends
+        error! '[USER] を指定してください' unless args.size == 1
         user = args.shift
         file_prefix = "#{user}_friends"
+        description = "#{user} の フレンド"
       when :list
+        error! '[USER] [LIST_NAME] を指定してください' unless args.size == 2
         user, list_name = *args
         file_prefix = "#{user}_#{list_name}"
+        description = "list #{user}/#{list_name} に登録されているメンバー"
       else
-        raise SystemExit
+        error! '[TASK] には "friends" または "list" を指定してください'
       end
 
       files = Dir.glob("data/#{file_prefix}*")
-      raise SystemExit unless files.size >= 2
+      error! "#{description}のデータが見つかりません" unless files.size >= 2
 
       dest_path, source_path = *files.reverse
-      say "#{dest_path} と #{source_path} の差分を計算中..."
+      say "#{description} #{dest_path} と #{source_path} の差分を計算中..."
 
       dest_time = dest_path.match(/\d+/).to_s
       source_time = source_path.match(/\d+/).to_s
@@ -144,6 +159,11 @@ module Creepy
       end
     end
 
+    desc 'help [TASK]', 'ヘルプを表示'
+    def help(*args)
+      super
+    end
+
     private
     def process(method, description, *args)
       users, next_cursor, index = [], -1, 1
@@ -155,6 +175,18 @@ module Creepy
         index += 1
       end
       users
+    end
+
+    def prepare(task, cond = true)
+      if options.help? || !cond
+        help task
+        raise SystemExit
+      end
+    end
+
+    def error!(*args)
+      shell.error *args
+      raise SystemExit
     end
 
     def tee(dest, path)
