@@ -102,7 +102,7 @@ module Creepy
       files = Dir.glob("data/#{file_prefix}*")
       error! "#{description}のデータが見つかりません" unless files.size >= 2
 
-      dest_path, source_path = *files.reverse
+      dest_path, source_path = *files.sort.reverse
       say "#{description} #{dest_path} と #{source_path} の差分を計算中..."
 
       dest_time = dest_path.match(/\d+/).to_s
