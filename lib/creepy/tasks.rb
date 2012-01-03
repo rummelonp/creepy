@@ -12,6 +12,6 @@ module Creepy
       end
     end
 
-    Dir[File.dirname(__FILE__) + '/tasks/*.rb'].each {|f| require f}
+    Dir[Dir.pwd + '/tasks/*.rb'].each {|f| require f}
   end
 end
