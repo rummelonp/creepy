@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+require 'creepy/configuration'
+require 'creepy/actions'
+require 'creepy/base'
+require 'creepy/tasks'
+require 'creepy/cli'
+
 module Creepy
-  autoload :Actions,      'creepy/actions'
-  autoload :Base,         'creepy/base'
-  autoload :Cli,          'creepy/cli'
-  autoload :ConfigLoader, 'creepy/config_loader'
-  autoload :Tasks,        'creepy/tasks'
+  extend Configuration
 end

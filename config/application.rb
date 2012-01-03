@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-@config = Creepy::ConfigLoader.load
-
 [Twitter, UserStream].each do |klass|
   klass.configure do |config|
     [:consumer_key,
@@ -9,7 +7,7 @@
      :oauth_token,
      :oauth_token_secret
     ].each do |key|
-      config.send "#{key}=", @config[key]
+      config.send "#{key}=", Creepy.config[key]
     end
   end
 end
