@@ -1,5 +1,6 @@
 source 'http://rubygems.org'
 
+gem 'mecab-ruby', git: 'git://github.com/eitoball/mecab-ruby.git'
 gem 'thor', '~> 0.14.6'
 gem 'twitter', '~> 2.0.2'
 gem 'userstream', '~> 1.0.0'

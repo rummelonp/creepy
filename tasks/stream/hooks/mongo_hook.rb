@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'MeCab'
 
 class Creepy::Stream
   class MongoHook
@@ -11,6 +12,12 @@ class Creepy::Stream
 
     def call(status)
       key = %w{friends event delete}.find {|key| status.key? key} || 'status'
+
+      if status['text']
+        m = ::MeCab::Tagger.new("-Owakati")
+        status['keywords'] = m.parse(status['text']).split(' ').map { |w| w.force_encoding("utf-8") }
+      end
+
       @db.collection(key).insert(status)
     end
   end
