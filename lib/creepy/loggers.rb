@@ -13,16 +13,24 @@ module Creepy
       @loggers ||= []
     end
 
+    include Enumerable
+
+    def each
+      loggers.each do |logger|
+        yield logger
+      end
+    end
+
     def method_missing(method_name, *args, &block)
       return super unless respond_to?(method_name)
-      loggers.each do |l|
+      each do |l|
         next unless l.respond_to?(method_name)
         l.send(method_name, *args, &block)
       end
     end
 
     def respond_to?(method_name)
-      loggers.any? {|l| l.respond_to?(method_name)} || super
+      any? {|l| l.respond_to?(method_name)} || super
     end
 
     Dir[File.dirname(__FILE__) + '/loggers/*.rb'].each {|f| require f}

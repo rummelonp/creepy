@@ -15,8 +15,16 @@ class Creepy::Tasks::Stream
       @hooks ||= []
     end
 
+    include Enumerable
+
+    def each
+      hooks.each do |hook|
+        yield hook
+      end
+    end
+
     def call(status)
-      hooks.each {|h| h.call(status)}
+      each {|h| h.call(status)}
     end
   end
 end
