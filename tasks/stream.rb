@@ -18,6 +18,9 @@ module Creepy
           @hooks << hook.new(params || {}) if hook
         end
       end
+    rescue
+      shell.error "#{$!.class}: #{$!.message}"
+      raise SystemExit
     end
     alias_method :reload, :setup
 
@@ -30,13 +33,17 @@ module Creepy
     def boot
       Process.daemon if options.daemon?
       loop do
-        @client.user &method(:process)
+        process
       end
     end
 
     private
-    def process(status)
-      @hooks.each {|h| h.call status}
+    def process
+      @client.user do |status|
+        @hooks.each {|h| h.call status}
+      end
+    rescue
+      shell.error "#{$!.class}: #{$!.message}"
     end
 
     Dir[File.dirname(__FILE__) + '/stream/*.rb'].each {|f| require f}
