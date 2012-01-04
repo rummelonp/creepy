@@ -7,16 +7,14 @@ module Creepy
     class_option :daemon, aliases: '-d', default: false, type: :boolean
 
     def setup
-      config = Creepy.reload_config!
+      Creepy.reload_config!
 
-      @client = UserStream.client(config)
+      @client = UserStream.client(Creepy.config)
 
       @hooks = []
-      if config.stream && config.stream.hooks
-        config.stream.hooks.each do |hook_name, params|
-          hook = Hooks.hooks[hook_name.to_sym]
-          @hooks << hook.new(params || {}) if hook
-        end
+      Creepy.config('stream.hooks', {}).each do |hook_name, params|
+        hook = Hooks.hooks[hook_name.to_sym]
+        @hooks << hook.new(params || {}) if hook
       end
     rescue
       shell.error "#{$!.class}: #{$!.message}"
