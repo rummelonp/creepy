@@ -2,7 +2,7 @@
 
 require 'creepy/configuration'
 require 'creepy/actions'
-require 'creepy/base'
+require 'creepy/task'
 require 'creepy/tasks'
 require 'creepy/cli'
 

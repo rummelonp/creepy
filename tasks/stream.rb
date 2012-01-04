@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 module Creepy
-  class Stream < Base
+  class Stream < Task
     Tasks.add_task :stream, self
 
     class_option :daemon, aliases: '-d', default: false, type: :boolean
