@@ -8,8 +8,7 @@ class Creepy::Tasks::Stream::Hooks
       @db = Creepy::Database.db(options)
     end
 
-    def call(status)
-      key = %w{friends event delete}.find {|key| status.key? key} || 'status'
+    def call(key, status)
       @db.collection(key).insert(status)
     end
   end

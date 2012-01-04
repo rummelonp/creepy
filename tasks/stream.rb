@@ -5,40 +5,55 @@ class Creepy::Tasks
     Creepy::Tasks.add :stream, self
 
     class_option :daemon, aliases: '-d', default: false, type: :boolean
+    class_option :sleep_time, aliases: '-s', default: 60, type: :numeric
 
     def setup
       Creepy.reload_config!
+
       @client = UserStream.client(Creepy.config('twitter', {}))
-      @hooks = Hooks.new(Creepy.config('tasks.stream.hooks', {}))
+      @logger = Creepy::Loggers.new(Creepy.config('tasks.stream.loggers', {}))
+      @hook = Hooks.new(Creepy.config('tasks.stream.hooks', {}))
+
+      @logger.info 'Stream#setup' do
+        ["options: {#{options.map{|k,v|k.to_s+': '+v.to_s}.join(', ')}}",
+         "outputs: [#{@logger.map(&:class).join(', ')}]",
+         "hooks: [#{@hook.map(&:class).join(', ')}]"].join(", ")
+      end
     rescue
-      shell.error "#{$!.class}: #{$!.message}"
+      @logger.warn('Stream#setup') { "#{$!.message} (#{$!.class})" }
       raise SystemExit
     end
 
     def trap
-      Signal.trap(:HUP) do
-        setup
-      end
+      Signal.trap(:HUP) { setup }
     end
 
     def boot
-      Process.daemon if options.daemon?
+      if options.daemon?
+        @logger.info('Stream#boot') { 'daemon start' }
+        Process.daemon
+      end
       loop do
-        process
+        request
+        @logger.info('Stream#boot') { "waiting #{options.sleep_time} seconds" }
+        sleep options.sleep_time
       end
     end
 
     private
-    def process
-      @client.user &method(:hooks)
+    def request
+      @logger.info('Stream#request') { 'start receive stream' }
+      @client.user &method(:read)
     rescue
-      shell.error "#{$!.class}, #{$!.message}"
+      @logger.error('Stream#request') { "#{$!.message} (#{$!.class})" }
     end
 
-    def hooks(status)
-      @hooks.call(status)
+    def read(status)
+      key = %w{friends event delete}.find {|key| status.key? key} || 'status'
+      @logger.debug('Stream#read') { "receive #{key} type" }
+      @hook.call(key, status)
     rescue
-      shell.error "#{$!.class}, #{$!.message}"
+      @logger.error('Stream#read') { "#{$!.message} (#{$!.class})" }
     end
 
     Dir[File.dirname(__FILE__) + '/stream/*.rb'].each {|f| require f}

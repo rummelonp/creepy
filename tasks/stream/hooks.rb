@@ -23,8 +23,8 @@ class Creepy::Tasks::Stream
       end
     end
 
-    def call(status)
-      each {|h| h.call(status)}
+    def call(key, status)
+      each {|h| h.call(key, status)}
     end
   end
 end
