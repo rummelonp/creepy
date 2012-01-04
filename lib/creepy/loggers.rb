@@ -33,6 +33,6 @@ module Creepy
       any? {|l| l.respond_to?(method_name)} || super
     end
 
-    Dir[File.dirname(__FILE__) + '/loggers/*.rb'].each {|f| require f}
+    Dir[File.dirname(__FILE__) + '/loggers/{file,shell}.rb'].each {|f| require f}
   end
 end
