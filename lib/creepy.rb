@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 require 'creepy/configuration'
+require 'creepy/database'
 require 'creepy/actions'
-require 'creepy/task'
+require 'creepy/mapper'
 require 'creepy/tasks'
 require 'creepy/cli'
 

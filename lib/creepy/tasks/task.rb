@@ -2,7 +2,7 @@
 
 require 'thor/group'
 
-module Creepy
+class Creepy::Tasks
   class Task < Thor::Group
     include Thor::Actions
     include Creepy::Actions

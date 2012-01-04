@@ -1,9 +1,14 @@
 ---
-:consumer_key: 'consumer key'
-:consumer_secret: 'consumer secret'
-:oauth_token: 'oauth token'
-:oauth_token_secret: 'oauth token secret'
-:db_name: creepy
-:stream:
-  :hooks:
-     :mongo: {}
+:twitter:
+  :consumer_key: 'consumer key'
+  :consumer_secret: 'consumer secret'
+  :oauth_token: 'oauth token'
+  :oauth_token_secret: 'oauth token secret'
+:db:
+# :host: localhost
+# :port: 27017
+  :name: creepy
+:tasks:
+  :stream:
+    :hooks:
+      :mongo:

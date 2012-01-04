@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-class Creepy::Stream
+class Creepy::Tasks::Stream::Hooks
   class MongoHook
-    Hooks.add_hook :mongo, self
+    Creepy::Tasks::Stream::Hooks.add :mongo, self
 
     def initialize(options = {})
-      db_name = options[:db_name] || Creepy.config.db_name || 'creepy'
-      @db = Mongo::Connection.new.db(db_name)
+      @db = Creepy::Database.db(options)
     end
 
     def call(status)

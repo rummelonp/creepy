@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 
-class Creepy::Stream
-  module Hooks
-    class << self
-      def hooks
-        @_hooks ||= {}
-      end
+class Creepy::Tasks::Stream
+  class Hooks < Creepy::Mapper
+    Dir[File.dirname(__FILE__) + '/hooks/*.rb'].each {|f| require f}
 
-      def add_hook(name, hook)
-        hooks[name] = hook
+    def initialize(options = {})
+      options.each do |name, params|
+        hook = self.class.mappings[name.to_sym]
+        hooks << hook.new(params || {}) if hook
       end
     end
 
-    Dir[File.dirname(__FILE__) + '/hooks/*.rb'].each {|f| require f}
+    def hooks
+      @hooks ||= []
+    end
+
+    def call(status)
+      hooks.each {|h| h.call(status)}
+    end
   end
 end

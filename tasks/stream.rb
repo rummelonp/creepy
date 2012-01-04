@@ -1,30 +1,23 @@
 # -*- coding: utf-8 -*-
 
-module Creepy
+class Creepy::Tasks
   class Stream < Task
-    Tasks.add_task :stream, self
+    Creepy::Tasks.add :stream, self
 
     class_option :daemon, aliases: '-d', default: false, type: :boolean
 
     def setup
       Creepy.reload_config!
-
       @client = UserStream.client(Creepy.config)
-
-      @hooks = []
-      Creepy.config('stream.hooks', {}).each do |hook_name, params|
-        hook = Hooks.hooks[hook_name.to_sym]
-        @hooks << hook.new(params || {}) if hook
-      end
+      @hooks = Hooks.new(Creepy.config('tasks.stream.hooks', {}))
     rescue
       shell.error "#{$!.class}: #{$!.message}"
       raise SystemExit
     end
-    alias_method :reload, :setup
 
     def trap
       Signal.trap(:HUP) do
-        reload
+        setup
       end
     end
 
@@ -37,11 +30,15 @@ module Creepy
 
     private
     def process
-      @client.user do |status|
-        @hooks.each {|h| h.call status}
-      end
+      @client.user &method(:hooks)
     rescue
-      shell.error "#{$!.class}: #{$!.message}"
+      shell.error "#{$!.class}, #{$!.message}"
+    end
+
+    def hooks(status)
+      @hooks.call(status)
+    rescue
+      shell.error "#{$!.class}, #{$!.message}"
     end
 
     Dir[File.dirname(__FILE__) + '/stream/*.rb'].each {|f| require f}
