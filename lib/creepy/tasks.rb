@@ -7,8 +7,8 @@ module Creepy
         @_tasks ||= {}
       end
 
-      def add_task(name, filter)
-        tasks[name] = filter
+      def add_task(name, task)
+        tasks[name] = task
       end
     end
 
