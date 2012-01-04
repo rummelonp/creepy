@@ -1,4 +1,3 @@
 Gemfile.lock
 config.yml
-data/
-log/
+log/*.log

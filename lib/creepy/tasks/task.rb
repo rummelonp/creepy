@@ -2,8 +2,8 @@
 
 require 'thor/group'
 
-module Creepy
-  class Base < Thor::Group
+class Creepy::Tasks
+  class Task < Thor::Group
     include Thor::Actions
     include Creepy::Actions
   end

@@ -2,8 +2,18 @@
 
 module Creepy
   module Configuration
-    def config
+    def config(keys = nil, default_value = nil)
       @config ||= load_config
+      if keys && keys.is_a?(String) && keys.present?
+        keys = keys.split('.')
+        value = @config
+        while !keys.empty? && value
+          value = value[keys.shift]
+        end
+        value || default_value
+      else
+        @config
+      end
     end
 
     def configure

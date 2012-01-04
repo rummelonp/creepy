@@ -1,42 +1,59 @@
 # -*- coding: utf-8 -*-
 
-module Creepy
-  class Stream < Base
-    Tasks.add_task :stream, self
+class Creepy::Tasks
+  class Stream < Task
+    Creepy::Tasks.add :stream, self
 
     class_option :daemon, aliases: '-d', default: false, type: :boolean
+    class_option :sleep_time, aliases: '-s', default: 60, type: :numeric
 
     def setup
-      config = Creepy.reload_config!
+      Creepy.reload_config!
 
-      @client = UserStream.client(config)
+      @client = UserStream.client(Creepy.config('twitter', {}))
+      @logger = Creepy::Loggers.new(Creepy.config('tasks.stream.loggers', {}))
+      @hook = Hooks.new(Creepy.config('tasks.stream.hooks', {}))
 
-      @hooks = []
-      if config.stream && config.stream.hooks
-        config.stream.hooks.each do |hook_name, params|
-          hook = Hooks.hooks[hook_name.to_sym]
-          @hooks << hook.new(params) if hook
-        end
+      @logger.info 'Stream#setup' do
+        ["options: {#{options.map{|k,v|k.to_s+': '+v.to_s}.join(', ')}}",
+         "outputs: [#{@logger.map(&:class).join(', ')}]",
+         "hooks: [#{@hook.map(&:class).join(', ')}]"].join(", ")
       end
+    rescue
+      @logger.warn('Stream#setup') { "#{$!.message} (#{$!.class})" }
+      raise SystemExit
     end
-    alias_method :reload, :setup
 
     def trap
-      Signal.trap(:HUP) do
-        reload
-      end
+      Signal.trap(:HUP) { setup }
     end
 
     def boot
-      Process.daemon if options.daemon?
+      if options.daemon?
+        @logger.info('Stream#boot') { 'daemon start' }
+        Process.daemon
+      end
       loop do
-        @client.user &method(:process)
+        request
+        @logger.info('Stream#boot') { "waiting #{options.sleep_time} seconds" }
+        sleep options.sleep_time
       end
     end
 
     private
-    def process(status)
-      @hooks.each {|h| h.call status}
+    def request
+      @logger.info('Stream#request') { 'start receive stream' }
+      @client.user &method(:read)
+    rescue
+      @logger.error('Stream#request') { "#{$!.message} (#{$!.class})" }
+    end
+
+    def read(status)
+      key = %w{friends event delete}.find {|key| status.key? key} || 'status'
+      @logger.debug('Stream#read') { "receive #{key} type" }
+      @hook.call(key, status)
+    rescue
+      @logger.error('Stream#read') { "#{$!.message} (#{$!.class})" }
     end
 
     Dir[File.dirname(__FILE__) + '/stream/*.rb'].each {|f| require f}

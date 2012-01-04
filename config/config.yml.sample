@@ -1,9 +1,26 @@
 ---
-:consumer_key: 'consumer key'
-:consumer_secret: 'consumer secret'
-:oauth_token: 'oauth token'
-:oauth_token_secret: 'oauth token secret'
-:stream:
-  :hooks:
-     :mongo:
-       :db_name: creepy
+:twitter:
+  :consumer_key: 'consumer key'
+  :consumer_secret: 'consumer secret'
+  :oauth_token: 'oauth token'
+  :oauth_token_secret: 'oauth token secret'
+:database:
+# :host: localhost
+# :port: 27017
+  :name: creepy
+:loggers:
+  :shell:
+    :level: 0 # debug
+  :file:
+    :format: :default # others, e.g. :simple, default is :simple
+    :logdev: log/creepy.log
+    :shift_age: weekly
+    :level: 1 # info
+:tasks:
+  :stream:
+    :loggers:
+      :shell:
+      :file:
+        :logdev: log/creepy.stream.log
+    :hooks:
+      :mongo:
