@@ -3,7 +3,7 @@
 :consumer_secret: 'consumer secret'
 :oauth_token: 'oauth token'
 :oauth_token_secret: 'oauth token secret'
+:db_name: creepy
 :stream:
   :hooks:
-     :mongo:
-       :db_name: creepy
+     :mongo: {}

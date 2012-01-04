@@ -5,7 +5,7 @@ class Creepy::Stream
     Hooks.add_hook :mongo, self
 
     def initialize(options = {})
-      db_name = options[:db_name] || 'creepy'
+      db_name = options[:db_name] || Creepy.config.db_name || 'creepy'
       @db = Mongo::Connection.new.db(db_name)
     end
 

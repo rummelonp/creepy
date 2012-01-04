@@ -15,7 +15,7 @@ module Creepy
       if config.stream && config.stream.hooks
         config.stream.hooks.each do |hook_name, params|
           hook = Hooks.hooks[hook_name.to_sym]
-          @hooks << hook.new(params) if hook
+          @hooks << hook.new(params || {}) if hook
         end
       end
     end
