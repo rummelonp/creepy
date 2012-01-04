@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-twitter = Creepy.config('twitter')
+twitter = Creepy.config('twitter', {})
+
 [Twitter, UserStream].each do |klass|
   klass.configure do |config|
     [:consumer_key,

@@ -8,7 +8,7 @@ class Creepy::Tasks
 
     def setup
       Creepy.reload_config!
-      @client = UserStream.client(Creepy.config)
+      @client = UserStream.client(Creepy.config('twitter', {}))
       @hooks = Hooks.new(Creepy.config('tasks.stream.hooks', {}))
     rescue
       shell.error "#{$!.class}: #{$!.message}"
