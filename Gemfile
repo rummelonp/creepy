@@ -6,6 +6,6 @@ gem 'userstream', '~> 1.0.0'
 gem 'mongo', '~> 1.5.2'
 gem 'bson_ext', '~> 1.5.2'
 gem 'im-kayac', '~> 0.0.5'
-gem 'notify', '~> 0.3.0'
+gem 'notify', '~> 0.3.0', require: false
 gem 'activesupport', '~> 3.1.3', require: 'active_support/core_ext'
 gem 'i18n', '~> 0.6.0'
