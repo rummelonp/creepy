@@ -8,6 +8,13 @@
 # :host: localhost
 # :port: 27017
   :name: creepy
+:notifies:
+  :im_kayac_com:
+    :username: 'username'
+#   :password: 'password'
+#   :sig_key: 'sig key'
+  :growl:
+    :env: growlnotify # if change this, must reload script.
 :loggers:
   :shell:
     :level: 0 # debug
