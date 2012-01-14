@@ -31,6 +31,7 @@
         :logdev: log/creepy.stream.log
     :hooks:
       :mongo:
-      :notifies:
+      :event:
+      :keyword:
 :ego:
   :regexp: (mitukiii)
