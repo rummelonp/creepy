@@ -25,4 +25,16 @@ Creepy.configure do |config|
     twitter.oauth_token        = accounts.twitter.oauth_token
     twitter.oauth_token_secret = accounts.twitter.oauth_token_secret
   end
+
+  ## タスクの設定
+  config.tasks do |tasks|
+    ## Stream タスクの設定
+    tasks.stream do |stream|
+      ## stream.hooks に利用する hook を追加
+      ## status を受け取る call メソッドを実装したオブジェクト
+
+      ## デバッグ用
+      # stream.hooks << lambda {|status| puts status}
+    end
+  end
 end
