@@ -1,0 +1,6 @@
+---
+:twitter:
+  :consumer_key: your_consumer_key
+  :consumer_secret: your_consumer_secret
+  :oauth_token: your_oauth_token
+  :oauth_token_secret: your_oauth_token_secret
