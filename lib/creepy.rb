@@ -3,4 +3,5 @@
 module Creepy
   require 'creepy/configuration'
   require 'creepy/tasks'
+  require 'creepy/hooks'
 end

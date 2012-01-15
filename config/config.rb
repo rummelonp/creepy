@@ -26,6 +26,15 @@ Creepy.configure do |config|
     twitter.oauth_token_secret = accounts.twitter.oauth_token_secret
   end
 
+  ## Mongo の設定
+  config.mongo do |mongo|
+    mongo.host       = 'localhost'
+    mongo.port       = 27017
+    mongo.db_name    = 'creepy'
+    mongo.connection = Mongo::Connection.new(mongo.host, mongo.port)
+    mongo.db         = mongo.connection.db(mongo.db_name)
+  end
+
   ## タスクの設定
   config.tasks do |tasks|
     ## Stream タスクの設定
@@ -35,6 +44,12 @@ Creepy.configure do |config|
 
       ## デバッグ用
       # stream.hooks << lambda {|status| puts status}
+
+      ## Mongo Hook 追加
+      ## 全ての status を種類ごとに collection に分け保存
+      # stream.hooks << Creepy::Hooks::Mongo.new(config.mongo.db)
+      ## status.text の MeCab による分かち書きを status.keywords として保存
+      stream.hooks << Creepy::Hooks::Mongo.with_mecab(config.mongo.db)
     end
   end
 end

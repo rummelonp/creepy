@@ -1,0 +1,31 @@
+# -*- coding: utf-8 -*-
+
+module Creepy
+  module Hooks
+    module Mongo
+      extend self
+
+      def new(db)
+        lambda do |status|
+          db.collection(key_from_status(status)).insert(status)
+        end
+      end
+
+      def with_mecab(db)
+        require 'natto'
+        nm = Natto::MeCab.new('-O wakati')
+        lambda do |status|
+          if status.text
+            status.keywords = nm.parse(status.text).split(' ')
+          end
+          db.collection(key_from_status(status)).insert(status)
+        end
+      end
+
+      private
+      def key_from_status(status)
+        key = %w{friends event delete}.find {|key| status.key? key} || 'status'
+      end
+    end
+  end
+end
