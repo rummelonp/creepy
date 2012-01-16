@@ -35,6 +35,16 @@ Creepy.configure do |config|
     mongo.db         = mongo.connection.db(mongo.db_name)
   end
 
+  ## 通知の設定
+  config.notifies do |notifies|
+    ## im.kayac.com アカウントの設定
+    notifies.im_kayac_com do |im_kayac_com|
+      im_kayac_com.username = accounts.im_kayac_com.username
+      im_kayac_com.password = accounts.im_kayac_com.password
+      im_kayac_com.sig_key  = accounts.im_kayac_com.sig_key
+    end
+  end
+
   ## タスクの設定
   config.tasks do |tasks|
     ## Stream タスクの設定

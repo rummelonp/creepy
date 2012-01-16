@@ -4,3 +4,7 @@
   :consumer_secret: your_consumer_secret
   :oauth_token: your_oauth_token
   :oauth_token_secret: your_oauth_token_secret
+:im_kayac_com:
+  :username: your_username
+# :password: your_password
+# :sig_key: your_sig
