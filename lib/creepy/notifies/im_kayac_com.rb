@@ -27,7 +27,7 @@ module Creepy
 
         if @sig_key && !options[:sig]
           options[:sig] = Digest::SHA1.hexdigest(message + @sig_key)
-        elsif @password && !options[:passdword]
+        elsif @password && !options[:password]
           options[:password] = @password
         end
 
