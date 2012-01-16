@@ -60,6 +60,32 @@ Creepy.configure do |config|
       # stream.hooks << Creepy::Hooks::Mongo.new(config.mongo.db)
       ## status.text の MeCab による分かち書きを status.keywords として保存
       stream.hooks << Creepy::Hooks::Mongo.with_mecab(config.mongo.db)
+
+      ## Keyword Hook 追加
+      keyword = Creepy::Hooks::Keyword.new
+
+      ## キーワード設定
+      keyword.include << 'twitter'
+      keyword.exclude << /^.*(RT|QT):? @[\w]+.*$/i
+
+      ## マッチした keyword と status を受け取る hook の設定
+      # keyword.hooks << lambda {|keyword, status| puts keyword, status}
+      keyword.hooks << lambda do |keyword, status|
+        status.keyword = keyword
+        config.mongo.db.collection('keyword').insert(status)
+      end
+
+      ## 通知のフォーマット設定
+      ## keyword, status を受け取り [title, message] を返す call メソッドを実装したオブジェクト
+      ## 標準は Creepy::Hooks::Keyword::Formatter.default
+      # keyword.formatter = Creepy::Hooks::Keyword::Formatter.simple
+
+      ## 通知先の設定
+      ## title, message を受け取る call メソッドを実装したオブジェクト
+      # keyword.notifies << lambda {|title, message| puts title, message}
+      keyword.notifies << Creepy::Notifies::ImKayacCom.new
+
+      stream.hooks << keyword
     end
   end
 end
