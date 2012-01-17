@@ -86,6 +86,57 @@ Creepy.configure do |config|
       keyword.notifies << Creepy::Notifies::ImKayacCom.new
 
       stream.hooks << keyword
+
+      ## Event Hook 追加
+      event = Creepy::Hooks::Event.new
+
+      ## アダプタの設定
+      ## event, status を受け取る call メソッドを実装したオブジェクト
+      event.adapter = Creepy::Hooks::Event::Adapter.new do |adapter|
+        ## event ごとのコールバック、通知の設定
+
+        ## on メソッドで event ごとのコールバックの設定
+        ## status を受け取る call メソッドを実装したオブジェクト
+        # adapter.on(:favorite) {|status| puts status}
+
+        ## notify メソッドで event ごとの通知のフォーマット設定
+        ## status を受け取り [title, message] を返す call メソッドを実装したオブジェクト
+        adapter.notify :favorite do |status|
+          ["@#{status.source.screen_name} Favorited",
+           status.target_object.text]
+        end
+        adapter.notify :unfavorite do |status|
+          ["@#{status.source.screen_name} Unfavorited",
+           status.target_object.text]
+        end
+        adapter.notify :follow do |status|
+          ["@#{status.source.screen_name} Followed",
+           "@#{status.target.screen_name}"]
+        end
+        adapter.notify :list_member_added do |status|
+          ["@#{status.source.screen_name} Added to list",
+           "#{status.target_object.full_name}"]
+        end
+        adapter.notify :list_member_removed do |status|
+          ["@#{status.source.screen_name} Removed from list",
+           "#{status.target_object.full_name}"]
+        end
+        adapter.notify :list_user_subscribed do |status|
+          ["@#{status.source.screen_name} Subscribed list",
+           "#{status.target_object.full_name}"]
+        end
+        adapter.notify :list_user_unsubscribed do |status|
+          ["@#{status.source.screen_name} Unsubscribed list",
+           "#{status.target_object.full_name}"]
+        end
+
+        ## 通知先の設定
+        ## title, message を受け取る call メソッドを実装したオブジェクト
+        # apdater.notifies << lambda {|title, message| puts title, message}
+        adapter.notifies << Creepy::Notifies::ImKayacCom.new
+      end
+
+      stream.hooks << event
     end
   end
 end

@@ -10,7 +10,7 @@ module Creepy
       extend Creepy::Configuration
 
       Creepy.config.twitter do |twitter|
-        twitter.set_defalt :credentials, nil
+        twitter.credentials = nil
       end
 
       configure do |stream|
