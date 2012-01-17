@@ -5,6 +5,10 @@ module Creepy
     class Event
       attr_accessor :adapter
 
+      def self.with_adapter(&block)
+        new(Adapter.new(&block))
+      end
+
       def initialize(adapter = nil)
         @adapter = adapter
       end

@@ -5,12 +5,13 @@ module Creepy
     class Keyword
       attr_accessor :include, :exclude, :hooks, :formatter, :notifies
 
-      def initialize(options = {})
+      def initialize(options = {}, &block)
         @include   = options.fetch :include,   []
         @exclude   = options.fetch :exclude,   []
         @hooks     = options.fetch :hooks,     []
         @formatter = options.fetch :formatter, Formatter.default
         @notifies  = options.fetch :notifies,  []
+        yield self if block_given?
       end
 
       def call(status)
