@@ -14,6 +14,7 @@ module Creepy
       end
 
       configure do |stream|
+        stream.set_default :params, {}
         stream.set_default :hooks,  []
       end
 
@@ -23,7 +24,8 @@ module Creepy
         @client = Twitter.new(twitter)
         @stream = UserStream.client(twitter)
         @logger = config.logger
-        @hooks  = self.class.config.hooks || []
+        @hooks  = self.class.config.hooks  || []
+        @params = self.class.config.params || {}
         twitter.credentials ||= @client.verify_credentials
       rescue
         tee :warn, "Stream#setup: #{$!.message} (#{$!.class})"
@@ -39,7 +41,7 @@ module Creepy
 
       private
       def request
-        @stream.user &method(:read)
+        @stream.user @params, &method(:read)
       rescue
         tee :error, "Stream#request: #{$!.message} (#{$!.class})"
       end
