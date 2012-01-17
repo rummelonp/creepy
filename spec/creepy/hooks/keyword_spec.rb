@@ -44,4 +44,30 @@ describe Creepy::Hooks::Keyword do
       @keyword.call(status)
     end
   end
+
+  describe :Formatter do
+    before do
+      @status = create_status('mitukiii',
+                              'たーねこいんざおうちなうよー' * 4,
+                              '<a href="http://sites.google.com/site/yorufukurou/" rel="nofollow">YoruFukurou</a>')
+    end
+
+    describe :default do
+      it 'default のフォーマット' do
+        formatter = Creepy::Hooks::Keyword::Formatter.default
+        title, message = formatter.call('たーねこ', @status)
+        title.should == '@mitukiii "たーねこ"'
+        message.should == "#{'たーねこいんざおうちなうよー' * 4} from YoruFukurou"
+      end
+    end
+
+    describe :simple do
+      it 'simple なフォーマット' do
+        formatter = Creepy::Hooks::Keyword::Formatter.simple
+        title, message = formatter.call('たーねこ', @status)
+        title.should == '@mitukiii "たーねこ"'
+        message.should == "たーねこいんざおうちなうよーたーねこいんざおうちなうよーたーねこいんざおう..."
+      end
+    end
+  end
 end
