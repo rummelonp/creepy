@@ -106,6 +106,18 @@ Creepy.configure do |config|
 
         ## notify メソッドで event ごとの通知のフォーマット設定
         ## status を受け取り [title, message] を返す call メソッドを実装したオブジェクト
+        adapter.notify :reply do |status|
+          ["@#{status.user.screen_name} Mentioned",
+           "#{status.text}"]
+        end
+        adapter.notify :retweet do |status|
+          ["@#{status.user.screen_name} Retweeted",
+           "#{status.retweeted_status.text}"]
+        end
+        adapter.notify :direct_message do |status|
+          ["@#{status.direct_message.sender.screen_name} Sent message",
+           "#{status.direct_message.text}"]
+        end
         adapter.notify :favorite do |status|
           ["@#{status.source.screen_name} Favorited",
            status.target_object.text]

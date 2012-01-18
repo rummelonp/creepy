@@ -14,13 +14,29 @@ module Creepy
       end
 
       def call(status)
-        return unless status.event
         return unless @adapter
-        return if status.source.screen_name == credentials.screen_name
-        @adapter.call(status.event, status)
+        if status.event
+          return if yourself? status.source.screen_name
+          event = status.event
+        elsif status.direct_message
+          return if yourself? status.direct_message.sender_screen_name
+          event = :direct_message
+        elsif status.retweeted_status
+          return unless yourself? status.retweeted_status.user.screen_name
+          event = :retweet
+        elsif yourself? status.in_reply_to_screen_name
+          event = :reply
+        else
+          return
+        end
+        @adapter.call(event, status)
       end
 
       private
+      def yourself?(screen_name)
+        credentials.screen_name == screen_name
+      end
+
       def credentials
         Creepy.config.twitter.credentials
       end
@@ -52,7 +68,6 @@ module Creepy
         end
 
         def call(event, status)
-          event = event.to_sym
           handler(event).each {|h| h.call(status)}
         end
       end
