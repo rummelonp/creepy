@@ -61,6 +61,9 @@ module Creepy
         end
 
         def notify(event, &block)
+          if block.nil? && Formatter.respond_to?(event)
+            block = Formatter.send(event)
+          end
           on(event) do |status|
             title, message = block.call(status)
             @notifies.each {|n| n.call(title, message)}
@@ -69,6 +72,80 @@ module Creepy
 
         def call(event, status)
           handler(event).each {|h| h.call(status)}
+        end
+      end
+
+      module Formatter
+        extend self
+
+        def reply
+          lambda do |status|
+            ["@#{status.user.screen_name} Mentioned",
+             "#{status.text}"]
+          end
+        end
+
+        def retweet
+          lambda do |status|
+            ["@#{status.user.screen_name} Retweeted",
+             "#{status.retweeted_status.text}"]
+          end
+        end
+
+        def direct_message
+          lambda do |status|
+            ["@#{status.direct_message.sender.screen_name} Sent message",
+             "#{status.direct_message.text}"]
+          end
+        end
+
+        def favorite
+          lambda do |status|
+            ["@#{status.source.screen_name} Favorited",
+             status.target_object.text]
+          end
+        end
+
+        def unfavorite
+          lambda do |status|
+            ["@#{status.source.screen_name} Unfavorited",
+             status.target_object.text]
+          end
+        end
+
+        def follow
+          lambda do |status|
+            ["@#{status.source.screen_name} Followed",
+             "@#{status.target.screen_name}"]
+          end
+        end
+
+        def list_member_added
+          lambda do |status|
+            ["@#{status.source.screen_name} Added to list",
+             "#{status.target_object.full_name}"]
+          end
+        end
+
+        def list_member_removed
+          lambda do |status|
+            ["@#{status.source.screen_name} Removed from list",
+             "#{status.target_object.full_name}"]
+          end
+        end
+
+        def list_user_subscribed
+          lambda do |status|
+            ["@#{status.source.screen_name} Subscribed list",
+             "#{status.target_object.full_name}"]
+          end
+        end
+
+        def list_user_unsubscribed
+          lambda do |status|
+            ["@#{status.source.screen_name} Unsubscribed list",
+             "#{status.target_object.full_name}"]
+          end
         end
       end
     end

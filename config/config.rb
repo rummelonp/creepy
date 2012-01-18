@@ -104,48 +104,19 @@ Creepy.configure do |config|
         ## status を受け取る call メソッドを実装したオブジェクト
         # adapter.on(:favorite) {|status| puts status}
 
-        ## notify メソッドで event ごとの通知のフォーマット設定
+        ## notify メソッドで通知する event を設定
+        ## ブロックを渡すと通知のフォーマットをカスタマイズ
         ## status を受け取り [title, message] を返す call メソッドを実装したオブジェクト
-        adapter.notify :reply do |status|
-          ["@#{status.user.screen_name} Mentioned",
-           "#{status.text}"]
-        end
-        adapter.notify :retweet do |status|
-          ["@#{status.user.screen_name} Retweeted",
-           "#{status.retweeted_status.text}"]
-        end
-        adapter.notify :direct_message do |status|
-          ["@#{status.direct_message.sender.screen_name} Sent message",
-           "#{status.direct_message.text}"]
-        end
-        adapter.notify :favorite do |status|
-          ["@#{status.source.screen_name} Favorited",
-           status.target_object.text]
-        end
-        adapter.notify :unfavorite do |status|
-          ["@#{status.source.screen_name} Unfavorited",
-           status.target_object.text]
-        end
-        adapter.notify :follow do |status|
-          ["@#{status.source.screen_name} Followed",
-           "@#{status.target.screen_name}"]
-        end
-        adapter.notify :list_member_added do |status|
-          ["@#{status.source.screen_name} Added to list",
-           "#{status.target_object.full_name}"]
-        end
-        adapter.notify :list_member_removed do |status|
-          ["@#{status.source.screen_name} Removed from list",
-           "#{status.target_object.full_name}"]
-        end
-        adapter.notify :list_user_subscribed do |status|
-          ["@#{status.source.screen_name} Subscribed list",
-           "#{status.target_object.full_name}"]
-        end
-        adapter.notify :list_user_unsubscribed do |status|
-          ["@#{status.source.screen_name} Unsubscribed list",
-           "#{status.target_object.full_name}"]
-        end
+        adapter.notify :reply
+        adapter.notify :retweet
+        adapter.notify :direct_message
+        adapter.notify :favorite
+        adapter.notify :unfavorite
+        adapter.notify :follow
+        adapter.notify :list_member_added
+        adapter.notify :list_member_removed
+        adapter.notify :list_user_subscribed
+        adapter.notify :list_user_unsubscribed
 
         ## 通知先の設定
         ## title, message を受け取る call メソッドを実装したオブジェクト
