@@ -17,7 +17,7 @@ module Creepy
         return unless @adapter
         if status.event
           return if yourself? status.source.screen_name
-          event = status.event
+          event = status.event.to_sym
         elsif status.direct_message
           return if yourself? status.direct_message.sender_screen_name
           event = :direct_message
