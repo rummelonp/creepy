@@ -38,6 +38,10 @@ module Creepy
           Creepy.reload_config!
           setup
         end
+        Signal.trap :TERM do
+          tee :info, 'Stream#trap: terminated'
+          raise SystemExit
+        end
       end
 
       def boot
