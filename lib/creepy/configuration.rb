@@ -7,6 +7,17 @@ class Module
 end
 
 module Creepy
+  extend self
+
+  def root
+    File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+  end
+
+  def reload_config!
+    config_path = File.join(root, 'config', 'config.rb')
+    load config_path
+  end
+
   module Configuration
     def config(*args)
       to_configatron(*args)

@@ -51,12 +51,14 @@ Creepy.configure do |config|
     tasks.stream do |stream|
       ## パラメータの設定
       ## 全てのリプライを受け取る
+      stream.params = {}
       stream.params[:replies] = :all
       ## トラッキングするキーワードの設定
       # stream.params[:track] = [:twitter]
 
       ## stream.hooks に利用する hook を追加
       ## status を受け取る call メソッドを実装したオブジェクト
+      stream.hooks = []
 
       ## デバッグ用
       # stream.hooks << lambda {|status| puts status}
