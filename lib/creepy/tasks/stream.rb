@@ -29,7 +29,7 @@ module Creepy
         twitter.credentials ||= @client.verify_credentials
         tee :warn, "Stream#setup: read config"
       rescue
-        tee :warn, "Stream#setup: #{$!.message} (#{$!.class})"
+        tee :info, "Stream#setup: #{$!.message} (#{$!.class})"
         raise SystemExit
       end
 
