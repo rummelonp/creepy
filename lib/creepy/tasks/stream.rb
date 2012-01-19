@@ -27,9 +27,9 @@ module Creepy
         @hooks  = self.class.config.hooks  || []
         @params = self.class.config.params || {}
         twitter.credentials ||= @client.verify_credentials
-        tee :warn, "Stream#setup: read config"
+        tee :info, "Stream#setup: read config"
       rescue
-        tee :info, "Stream#setup: #{$!.message} (#{$!.class})"
+        tee :warn, "Stream#setup: #{$!.message} (#{$!.class})"
         raise SystemExit
       end
 
