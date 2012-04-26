@@ -70,6 +70,13 @@ Creepy.configure do |config|
 
         ## im.kayac.com に通知
         keyword.notifies << Creepy::Notifies::ImKayacCom.new
+
+        ## ログに保存
+        log_file = File.join(log_dir, 'creepy.keyword.log')
+        logger = Logger.new(log_file)
+        keyword.notifies << lambda do |title, message, options = {}|
+          logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
+        end
       end
 
       ## Event 通知
@@ -88,6 +95,13 @@ Creepy.configure do |config|
 
         ## im.kayac.com に通知
         adapter.notifies << Creepy::Notifies::ImKayacCom.new
+
+        ## ログに保存
+        log_file = File.join(log_dir, 'creepy.event.log')
+        logger = Logger.new(log_file)
+        adapter.notifies << lambda do |title, message, options = {}|
+          logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
+        end
       end
     end
   end
