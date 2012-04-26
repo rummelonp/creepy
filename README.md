@@ -8,6 +8,24 @@ Twitter のユーザーストリームを受け取ってアレコレするアプ
 * 指定したイベントの通知
 * 全てのステータスの MongoDB への保存
 
+## 必要なもの
+
+     Ruby
+     MongoDB
+
+### RubyGems
+
+    twitter
+    userstream
+    mongo
+    bson_ext
+    natto
+    im-kayac
+    configatron
+    thor
+    activesupport
+    i18n
+
 ## インストール
 
     git clone git://github.com/mitukiii/creepy.git
@@ -33,39 +51,6 @@ Twitter のユーザーストリームを受け取ってアレコレするアプ
 ## 設定
 
 config/config.rb のコメント読んでください
-
-## 自動起動
-
-### Upstart
-
-    start on runlevel [2345]
-    stop on shutdown
-    respawn
-    
-    exec sudo -Hnu #{user} env LANG=ja_JP.UTF-8 `which ruby` #{creepy_root}/creepy.rb stream
-
-\#{user} と #{creepy_root} は適宜読み替えてください  
-Upstart が動いてる環境であれば上記のような設定ファイルを  
-定義ファイルの入ったディレクトリ（Ubuntu であれば /etc/init）に追加しておけば  
-OS 起動時に creepy も自動的に起動するようになります
-
-## 必要なもの
-
-* Ruby
-* MongoDB
-
-### RubyGems
-
-* twitter
-* userstream
-* mongo
-* bson_ext
-* natto
-* im-kayac
-* configatron
-* thor
-* activesupport
-* i18n
 
 ## コピーライト
 
