@@ -10,6 +10,7 @@ gem 'configatron', '~> 2.9.1'
 gem 'thor', '0.14.6'
 gem 'activesupport', '~> 3.2.3', require: 'active_support/core_ext'
 gem 'i18n', '~> 0.6.0'
+gem 'pry', '~> 0.9.9.4'
 
 group :development do
   gem 'rspec', '~> 2.9.0'
