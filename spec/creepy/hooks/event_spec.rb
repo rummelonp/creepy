@@ -62,9 +62,9 @@ describe Creepy::Hooks::Event do
           .with(@status)
         notify_handler.should_receive(:call)
           .with(@status)
-          .and_return(['@mitukiii favorite', 'たーねこいんざおうちなうよー'])
+          .and_return(['@mitukiii favorite', 'たーねこいんざおうちなうよー', {}])
         @notify.should_receive(:call)
-          .with('@mitukiii favorite', 'たーねこいんざおうちなうよー')
+          .with('@mitukiii favorite', 'たーねこいんざおうちなうよー', {})
         @event.call(@status)
       end
 

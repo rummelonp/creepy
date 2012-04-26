@@ -20,8 +20,8 @@ module Creepy
         keyword = $&.to_s
         return if @exclude.flatten.any? {|k| status.text.match(k)}
         @hooks.each {|h| h.call(keyword, status)}
-        title, message = @formatter.call(keyword, status)
-        @notifies.each {|n| n.call(title, message)}
+        title, message, options = @formatter.call(keyword, status)
+        @notifies.each {|n| n.call(title, message, options)}
       end
 
       module Formatter
@@ -30,14 +30,16 @@ module Creepy
         def default
           lambda do |keyword, status|
             ["@#{status.user.screen_name} \"#{keyword}\"",
-             "#{status.text} from #{status.source.gsub(/<\/?[^>]*>/, '')}"]
+             "#{status.text} from #{status.source.gsub(/<\/?[^>]*>/, '')}",
+             {}]
           end
         end
 
         def simple
           lambda do |keyword, status|
             ["@#{status.user.screen_name} \"#{keyword}\"",
-             status.text.truncate(40)]
+             status.text.truncate(40),
+             {}]
           end
         end
       end

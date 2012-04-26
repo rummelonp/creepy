@@ -20,7 +20,7 @@ describe Creepy::Hooks::Keyword do
       @keyword.exclude << 'はうすなう'
       @hook = lambda {|keyword, status|}
       @keyword.hooks << @hook
-      @notify = lambda{|title, message|}
+      @notify = lambda{|title, message, options|}
       @keyword.notifies << @notify
     end
 
@@ -30,9 +30,9 @@ describe Creepy::Hooks::Keyword do
         .with('たーねこ', status)
       @keyword.formatter.should_receive(:call)
         .with('たーねこ', status)
-        .and_return(['@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー'])
+        .and_return(['@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー', {}])
       @notify.should_receive(:call)
-        .with('@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー')
+        .with('@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー', {})
       @keyword.call(status)
     end
 
