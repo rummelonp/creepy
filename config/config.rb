@@ -50,65 +50,31 @@ Creepy.configure do |config|
     ## Stream タスクの設定
     tasks.stream do |stream|
       ## パラメータの設定
-      ## 全てのリプライを受け取る
       stream.params = {}
       stream.params[:replies] = :all
-      ## トラッキングするキーワードの設定
-      # stream.params[:track] = [:twitter]
 
-      ## stream.hooks に利用する hook を追加
-      ## status を受け取る call メソッドを実装したオブジェクト
+      ## Hook の設定
       stream.hooks = []
 
-      ## デバッグ用
-      # stream.hooks << lambda {|status| puts status}
-
-      ## Mongo Hook 追加
-      ## 全ての status を種類ごとに collection に分け保存
-      # stream.hooks << Creepy::Hooks::Mongo.new(config.mongo.db)
-      ## status.text の MeCab による分かち書きを status.keywords として保存
+      ## MongoDB に保存
       stream.hooks << Creepy::Hooks::Mongo.with_mecab(config.mongo.db)
 
-      ## Keyword Hook 追加
+      ## Keyword 通知
       stream.hooks << Creepy::Hooks::Keyword.new do |keyword|
-        ## キーワード設定
         keyword.include << 'twitter'
         keyword.exclude << /^.*(RT|QT):? @[\w]+.*$/i
-
-        ## マッチした keyword と status を受け取る hook の設定
-        # keyword.hooks << lambda {|keyword, status| puts keyword, status}
         keyword.hooks << lambda do |keyword, status|
           status.keyword = keyword
           config.mongo.db.collection('keyword').insert(status)
         end
 
-        ## 通知のフォーマット設定
-        ## keyword, status を受け取り [title, message] を返す call メソッドを実装したオブジェクト
-        ## 標準は Creepy::Hooks::Keyword::Formatter.default
-        # keyword.formatter = Creepy::Hooks::Keyword::Formatter.simple
-
-        ## 通知先の設定
-        ## title, message を受け取る call メソッドを実装したオブジェクト
-        # keyword.notifies << lambda {|title, message| puts title, message}
+        ## im.kayac.com に通知
         keyword.notifies << Creepy::Notifies::ImKayacCom.new
       end
 
-      ## Event Hook 追加
-      ## アダプタの設定
-      ## event, status を受け取る call メソッドを実装したオブジェクト
-      # event = Creepy::Hooks::Event.new
-      # event.adapter = lambda {|event, status| puts event, status}
-      # stream.hooks << event
+      ## Event 通知
       stream.hooks << Creepy::Hooks::Event.with_adapter do |adapter|
-        ## event ごとのコールバック、通知の設定
-
-        ## on メソッドで event ごとのコールバックの設定
-        ## status を受け取る call メソッドを実装したオブジェクト
-        # adapter.on(:favorite) {|status| puts status}
-
-        ## notify メソッドで通知する event を設定
-        ## ブロックを渡すと通知のフォーマットをカスタマイズ
-        ## status を受け取り [title, message] を返す call メソッドを実装したオブジェクト
+        ## 通知する event を設定
         adapter.notify :reply
         adapter.notify :retweet
         adapter.notify :direct_message
@@ -120,9 +86,7 @@ Creepy.configure do |config|
         adapter.notify :list_user_subscribed
         adapter.notify :list_user_unsubscribed
 
-        ## 通知先の設定
-        ## title, message を受け取る call メソッドを実装したオブジェクト
-        # apdater.notifies << lambda {|title, message| puts title, message}
+        ## im.kayac.com に通知
         adapter.notifies << Creepy::Notifies::ImKayacCom.new
       end
     end
