@@ -25,6 +25,7 @@ Twitter のユーザーストリームを受け取ってアレコレするアプ
     thor
     activesupport
     i18n
+    pry
 
 ## インストール
 
