@@ -100,7 +100,7 @@ stream.hooks に Creepy::Hooks::Keyword クラスのインスタンスを追加�
 keyword.include にマッチさせたいキーワード文字列/正規表現を設定  
 keyword.exclude に除外したいキーワード文字列/正規表現を設定  
 keyword.hooks に keyword と status を受け取る処理を設定  
-keyword.notifies に title と message を受け取る処理を設定
+keyword.notifies に title と message（, options）を受け取る処理を設定
 
     stream.hooks << Creepy::Hooks::Keyword.new do |keyword|
       # キーワード設定
@@ -121,27 +121,29 @@ keyword.notifies に title と message を受け取る処理を設定
       ## ログに保存
       log_file = File.join(log_dir, 'creepy.keyword.log')
       logger = Logger.new(log_file)
-      keyword.notifies << lambda do |title, message|
+      keyword.notifies << lambda do |title, message, options = {}|
         logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
       end
     end
 
 hooks と notifies は  
 hooks は生の keyword と status を受け取る  
-notifies は keyword と status を元に加工された title と message を受け取る  
+notifies は keyword と status を元に加工された title と message（, options）を受け取る  
 という点で違う
 
-notifies に渡される title と message は formatter を変更することでカスタマイズすつことも出来る  
+notifies に渡される title と message（, options）は formatter を変更することでカスタマイズすつことも出来る  
 デフォルトでは Creepy::Hooks::Keyword::Formatter.default が使用される  
-formatter は keyword, status を受け取り [title, message] を返す必要がある
+formatter は keyword, status を受け取り [title, message, options] を返す必要がある
+
+formatter をカスタマイズすることにより im.kayac.com での通知時に Tweetbot を開く URL Scheme を追加することも出来る
 
     stream.hooks << Creepy::Hooks::Keyword.new do |keyword|
       ...
       keyword.formatter = lambda do |keyword, status|
-        title = "@#{status.user.screen_name}: #{keyword}"
-        message = status.text
-
-        [title, message]
+        title, message, options = Creepy::Hooks::Keyword::Formatter.default.call(keyword, status)
+        options[:handler] = "tweetbot://#{config.twitter.credentials.screen_name}/status/#{status.id}"
+        
+        [title, message, options]
       end
       ...
     end
@@ -170,7 +172,7 @@ Creepy::Hooks::Event::Adapter を使って簡単に設定することが出来�
         ## ログに保存
         log_file = File.join(log_dir, 'creepy.event.log')
         logger = Logger.new(log_file)
-        adapter.notifies << lambda do |title, message|
+        adapter.notifies << lambda do |title, message, options = {}|
           logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
         end
       end
