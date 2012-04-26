@@ -28,7 +28,7 @@ Twitter のユーザーストリームを受け取ってアレコレするアプ
 ## 使い方
 
     # ユーザーストリームを受信開始する
-    bundle exec ./creepy.rb stream
+    ./creepy.rb stream
 
 ## 設定
 
