@@ -35,8 +35,12 @@ module Creepy
 
       def trap
         Signal.trap :HUP do
-          Creepy.reload_config!
-          setup
+          begin
+            Creepy.reload_config!
+            setup
+          rescue Error
+            tee :error, 'Stream#trap: #{$!.message} (#{$!.class})'
+          end
         end
         Signal.trap :TERM do
           tee :info, 'Stream#trap: terminated'
