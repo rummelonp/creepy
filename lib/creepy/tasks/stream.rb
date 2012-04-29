@@ -39,7 +39,7 @@ module Creepy
             Creepy.reload_config!
             setup
           rescue Error
-            tee :error, 'Stream#trap: #{$!.message} (#{$!.class})'
+            tee :error, "Stream#trap: #{$!.message} (#{$!.class})"
           end
         end
         Signal.trap :TERM do
