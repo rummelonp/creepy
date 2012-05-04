@@ -6,6 +6,7 @@ Twitter のユーザーストリームを受け取ってアレコレするアプ
 
 * 全てのステータスの MongoDB への保存
 * 指定したキーワード文字列/正規表現にマッチしたツイートの通知
+* 指定したユーザーのツイートの通知
 * 指定したイベントの通知
 
 ## 必要なもの
@@ -148,6 +149,31 @@ formatter をカスタマイズすることにより im.kayac.com での通知�
       end
       ...
     end
+
+### 指定したユーザーのツイートの通知
+
+stream.hooks に Creepy::Hooks::User クラスのインスタンスを追加する
+
+user.include に通知したいユーザーの screen_name を設定  
+user.hooks に screen_name と status を受け取る処理を設定  
+user.notifies に title と message（, options）を受け取る処理を設定
+
+    stream.hooks << Creepy::Hooks::User.new do |user|
+      ## ユーザー設定
+      user.include << 'mitukiii'
+      
+      ## im.kayac.com に通知
+      user.notifies << Creepy::Notifies::ImKayacCom.new
+      
+      ## ログに保存
+      log_file = File.join(log_dir, 'creepy.user.log')
+      logger = Logger.new(log_file)
+      user.notifies << lambda do |title, message, options = {}|
+        logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
+      end
+    end
+
+hooks と notifies、また formatter については Creepy::Hooks::Keyword と同様
 
 ### 指定したイベントの通知
 
