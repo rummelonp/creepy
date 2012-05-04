@@ -3,24 +3,6 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper')
 
 describe Creepy::Hooks::Event do
-  def create_credentials(screen_name)
-    Hashie::Mash.new({
-      screen_name: screen_name
-    })
-  end
-
-  def create_event_status(screen_name, event, text)
-    Hashie::Mash.new({
-      event: event,
-      target_object: {
-        text: text
-      },
-      source: {
-        screen_name: screen_name,
-      }
-    })
-  end
-
   context 'favorite イベント' do
     before do
       @credentials = create_credentials('mitukiii')

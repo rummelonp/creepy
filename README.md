@@ -101,6 +101,9 @@ keyword.hooks に keyword と status を受け取る処理を設定
 keyword.notifies に title と message（, options）を受け取る処理を設定
 
     stream.hooks << Creepy::Hooks::Keyword.new do |keyword|
+      # 自分のツイートを除外
+      keyword.ignore_self!
+      
       # キーワード設定
       keyword.include << 'twitter'
       
