@@ -64,9 +64,6 @@ Creepy.config.tasks.stream（以下 stream）に設定する
 
 stream.params がパラメータとしてそのまま送信される
 
-    # 初期化
-    stream.params = {}
-    
     # 全てのリプライを受け取る
     stream.params[:replies] = :all
     
