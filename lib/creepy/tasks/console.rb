@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-require 'thor/group'
-
 module Creepy
   module Tasks
-    class Console < Thor::Group
+    class Console < Base
       Tasks.add_task :console, self
+
+      desc 'Boots up the creepy pry console'
 
       def console
         Pry.start

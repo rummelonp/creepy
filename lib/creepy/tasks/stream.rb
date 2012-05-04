@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-require 'thor/group'
-
 module Creepy
   module Tasks
-    class Stream < Thor::Group
+    class Stream < Base
       Tasks.add_task :stream, self
+
+      desc 'Starts up creepy stream'
 
       extend Creepy::Configuration
 
