@@ -9,11 +9,11 @@ module Creepy
 
       extend Creepy::Configuration
 
-      Creepy.config.twitter do |twitter|
-        twitter.credentials = nil
+      Creepy.register_default do |config|
+        config.twitter.credentials = nil
       end
 
-      configure do |stream|
+      register_default do |stream|
         stream.set_default :params, {}
         stream.set_default :hooks,  []
       end

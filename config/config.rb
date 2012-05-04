@@ -50,11 +50,7 @@ Creepy.configure do |config|
     ## Stream タスクの設定
     tasks.stream do |stream|
       ## パラメータの設定
-      stream.params = {}
       stream.params[:replies] = :all
-
-      ## Hook の設定
-      stream.hooks = []
 
       ## MongoDB に保存
       stream.hooks << Creepy::Hooks::Mongo.with_mecab(config.mongo.db)
