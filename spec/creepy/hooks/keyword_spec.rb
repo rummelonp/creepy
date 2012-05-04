@@ -3,16 +3,6 @@
 require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper')
 
 describe Creepy::Hooks::Keyword do
-  def create_status(screen_name, text, source = '')
-    Hashie::Mash.new({
-      text: text,
-      user: {
-        screen_name: screen_name,
-      },
-      source: source
-    })
-  end
-
   context '@include=["たーねこ"] @exlucde=["はうすなう"]' do
     before do
       @keyword = Creepy::Hooks::Keyword.new
