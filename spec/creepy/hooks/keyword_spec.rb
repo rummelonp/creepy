@@ -5,7 +5,9 @@ require File.join(File.dirname(__FILE__), '..', '..', 'spec_helper')
 describe Creepy::Hooks::Keyword do
   context '@include=["たーねこ"] @exlucde=["はうすなう"]' do
     before do
+      @credentials = create_credentials('mitukiii')
       @keyword = Creepy::Hooks::Keyword.new
+      @keyword.stub!(:credentials).and_return(@credentials)
       @keyword.include << 'たーねこ'
       @keyword.exclude << 'はうすなう'
       @hook = lambda {|keyword, status|}
@@ -14,24 +16,43 @@ describe Creepy::Hooks::Keyword do
       @keyword.notifies << @notify
     end
 
-    it '"たーねこいんざおうちなうよー" にマッチすること' do
-      status = create_status('mitukiii', 'たーねこいんざおうちなうよー')
-      @hook.should_receive(:call)
-        .with('たーねこ', status)
-      @keyword.formatter.should_receive(:call)
-        .with('たーねこ', status)
-        .and_return(['@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー', {}])
-      @notify.should_receive(:call)
-        .with('@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー', {})
-      @keyword.call(status)
+    context '自分の "たーねこいんざおうちなうよー" というツイート' do
+      it 'マッチすること' do
+        status = create_status('mitukiii', 'たーねこいんざおうちなうよー')
+        @hook.should_receive(:call)
+          .with('たーねこ', status)
+        @keyword.formatter.should_receive(:call)
+          .with('たーねこ', status)
+          .and_return(['@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー', {}])
+        @notify.should_receive(:call)
+          .with('@mitukiii: "たーねこ"', 'たーねこいんざおうちなうよー', {})
+        @keyword.call(status)
+      end
+
+      context :ignore_self! do
+        it 'マッチしないこと' do
+          @keyword.ignore_self!
+          status = create_status('mitukiii', 'たーねこいんざおうちなうよー')
+          @hook.should_not_receive(:call)
+          @keyword.formatter.should_not_receive(:call)
+          @notify.should_not_receive(:call)
+          @keyword.call(status)
+        end
+
+        after do
+          @keyword.ignore_self = false
+        end
+      end
     end
 
-    it '"たーねこいんざはうすなうよー" にマッチしないこと' do
-      status = create_status('mitukiii', 'たーねこいんざはうすなうよー')
-      @hook.should_not_receive(:call)
-      @keyword.formatter.should_not_receive(:call)
-      @notify.should_not_receive(:call)
-      @keyword.call(status)
+    context '自分の "たーねこいんざはうすなうよー" というツイート' do
+      it 'マッチしないこと' do
+        status = create_status('mitukiii', 'たーねこいんざはうすなうよー')
+        @hook.should_not_receive(:call)
+        @keyword.formatter.should_not_receive(:call)
+        @notify.should_not_receive(:call)
+        @keyword.call(status)
+      end
     end
   end
 
