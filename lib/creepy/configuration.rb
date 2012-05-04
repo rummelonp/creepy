@@ -13,7 +13,13 @@ module Creepy
     File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
   end
 
+  def defaults
+    @defaults ||= []
+  end
+
   def reload_config!
+    configatron.reset!
+    defaults.each {|d| d.call}
     config_path = File.join(root, 'config', 'config.rb')
     load config_path
   end
@@ -25,6 +31,15 @@ module Creepy
 
     def configure
       yield config
+      self
+    end
+
+    def register_default(&block)
+      default = lambda do
+        configure &block
+      end
+      Creepy.defaults << default
+      default.call
       self
     end
   end

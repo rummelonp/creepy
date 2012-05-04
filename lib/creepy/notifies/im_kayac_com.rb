@@ -9,7 +9,7 @@ module Creepy
 
       extend Creepy::Configuration
 
-      configure do |im_kayac_com|
+      register_default do |im_kayac_com|
         im_kayac_com.set_default :username, nil
         im_kayac_com.set_default :password, nil
         im_kayac_com.set_default :sig_key,  nil
