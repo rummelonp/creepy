@@ -8,6 +8,7 @@ Twitter のユーザーストリームを受け取ってアレコレするアプ
 * 指定したキーワード文字列/正規表現にマッチしたツイートの通知
 * 指定したユーザーのツイートの通知
 * 指定したイベントの通知
+* MongoDB からツイートの検索
 
 ## 必要なもの
 
@@ -49,6 +50,9 @@ Twitter のユーザーストリームを受け取ってアレコレするアプ
 
     # ユーザーストリームを受信開始する
     ./creepy.rb stream
+
+    # ツイートを検索
+    ./creepy.rb find
 
 ## 設定
 
@@ -222,6 +226,36 @@ adapter.on でイベントごとの処理をカスタマイズすることも出
       # ここにイベントを受け取った時にしたい処理を書く
     end
     stream.hooks << event_hook
+
+## 設定
+
+    $ ./creepy.rb find --help
+    Usage:
+      creepy.rb find
+    
+    Options:
+      -n, [--screen-name=SCREEN_NAME]  # Filter screen_name separated by a comma.
+      -k, [--keywords=KEYWORDS]        # Filter keywords separated by a comma.
+      -t, [--text=TEXT]                # A regular expression to filter the text.
+      -s, [--sort=SORT]                # Sor key & direction pair that are separated by a comma.
+                                       # Default: id,desc
+      -l, [--limit=N]                  # Number of tweets.
+    
+    Find tweets
+
+--screen-name でユーザー名をカンマ区切りで指定  
+複数指定した場合は OR 検索
+
+--keywords でキーワードをカンマ区切りで指定  
+キーワードは MongoDB への 保存時に MeCab による分かち書きを保存している必要がある  
+複数指定した場合は AND 検索
+
+--text でテキストの正規表現を指定
+
+--sort でソートするキーと順番をカンマ区切り指定  
+例えば id の降順にしたい場合は id,desc と指定する
+
+--limit で検索するツイートの最大数を指定
 
 ### 自分で hook を書く
 
