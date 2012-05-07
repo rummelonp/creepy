@@ -227,7 +227,7 @@ adapter.on でイベントごとの処理をカスタマイズすることも出
     end
     stream.hooks << event_hook
 
-## 設定
+## ツイートの検索
 
     $ ./creepy.rb find --help
     Usage:
