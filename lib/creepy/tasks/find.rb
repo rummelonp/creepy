@@ -21,46 +21,59 @@ module Creepy
         :desc => 'Show deleted status only.'
 
       class_option :sort,        :aliases => '-s', :type => :string,  :default => 'id,desc',
-        :desc => 'Sor key & direction pair that are separated by a comma.'
+        :desc => 'Sort key (Descending), or sort key & direction pair that are separated by a comma.'
       class_option :limit,       :aliases => '-l', :type => :numeric,
         :desc => 'Number of tweets.'
 
       def setup
         @db = Creepy.config.mongo.db
         @col = @db['status']
-        @sel = {}
+        @sel = {'text' => {'$exists' => true}}
         @opts = {}
         @highlight = nil
       end
 
       def build_selecter
+        highlight_keywords = []
+
         if options[:screen_name]
           users = options[:screen_name].split(',')
           @sel['user.screen_name'] = {'$in' => users}
+          @col.ensure_index([['user.screen_name', Mongo::ASCENDING]])
         end
 
         if options[:keywords]
-          keywords = options[:keywords].split(',')
-          @sel['keywords'] = {'$all' => keywords}
-          @highlight = Regexp.new('(' + keywords.map {|k| Regexp.escape(k)}.join('|') + ')')
+          keywords = options[:keywords].split(',').map {|k| Regexp.escape(k)}
+          highlight_keywords << keywords
+          regexps = keywords.map {|k| Regexp.new(k, 'i')}
+          @sel['keywords'] = {'$all' => regexps}
+          @col.ensure_index([['keywords', Mongo::ASCENDING]])
         end
 
         if options[:text]
           text = options[:text]
-          @sel['text'] = {'$regex' => text}
-          @highlight = Regexp.new('(' + text + ')')
+          highlight_keywords << text
+          regexp = Regexp.new(text, 'i')
+          @sel['text'] = {'$regex' => regexp}
+          @col.ensure_index([['text', Mongo::ASCENDING]])
         end
 
         if options[:deleted]
           sel = {'delete.status' => {'$exists' => true}}
           deleted_ids = @db['delete'].find(sel).to_a.map {|s| s['delete']['status']['id']}
           @sel['id'] = {'$in' => deleted_ids}
+          @col.ensure_index([['id', Mongo::DESCENDING]])
+        end
+
+        unless highlight_keywords.empty?
+          @highlight = Regexp.new('(' + highlight_keywords.join('|') + ')', 'i')
         end
       end
 
       def build_options
         if options[:sort]
           key, direction = *options[:sort].split(',')
+          direction = :desc unless direction
           @opts[:sort] = [key, direction]
         end
 

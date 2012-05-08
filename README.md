@@ -237,7 +237,7 @@ adapter.on でイベントごとの処理をカスタマイズすることも出
       -n, [--screen-name=SCREEN_NAME]  # Filter screen_name separated by a comma.
       -k, [--keywords=KEYWORDS]        # Filter keywords separated by a comma.
       -t, [--text=TEXT]                # A regular expression to filter the text.
-      -s, [--sort=SORT]                # Sor key & direction pair that are separated by a comma.
+      -s, [--sort=SORT]                # Sort key (Descending), or sort key & direction pair that are separated by a comma.
                                        # Default: id,desc
       -l, [--limit=N]                  # Number of tweets.
     
