@@ -34,6 +34,8 @@ module Creepy
       end
 
       def build_selecter
+        highlight_keywords = []
+
         if options[:screen_name]
           users = options[:screen_name].split(',')
           @sel['user.screen_name'] = {'$in' => users}
@@ -41,16 +43,18 @@ module Creepy
         end
 
         if options[:keywords]
-          keywords = options[:keywords].split(',')
-          @sel['keywords'] = {'$all' => keywords}
-          @highlight = Regexp.new('(' + keywords.map {|k| Regexp.escape(k)}.join('|') + ')')
+          keywords = options[:keywords].split(',').map {|k| Regexp.escape(k)}
+          highlight_keywords << keywords
+          regexps = keywords.map {|k| Regexp.new(k, 'i')}
+          @sel['keywords'] = {'$all' => regexps}
           @col.ensure_index([['keywords', Mongo::ASCENDING]])
         end
 
         if options[:text]
           text = options[:text]
-          @sel['text'] = {'$regex' => text}
-          @highlight = Regexp.new('(' + text + ')')
+          highlight_keywords << text
+          regexp = Regexp.new(text, 'i')
+          @sel['text'] = {'$regex' => regexp}
           @col.ensure_index([['text', Mongo::ASCENDING]])
         end
 
@@ -59,6 +63,10 @@ module Creepy
           deleted_ids = @db['delete'].find(sel).to_a.map {|s| s['delete']['status']['id']}
           @sel['id'] = {'$in' => deleted_ids}
           @col.ensure_index([['id', Mongo::DESCENDING]])
+        end
+
+        unless highlight_keywords.empty?
+          @highlight = Regexp.new('(' + highlight_keywords.join('|') + ')', 'i')
         end
       end
 
