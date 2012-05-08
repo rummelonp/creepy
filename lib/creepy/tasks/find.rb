@@ -21,7 +21,7 @@ module Creepy
         :desc => 'Show deleted status only.'
 
       class_option :sort,        :aliases => '-s', :type => :string,  :default => 'id,desc',
-        :desc => 'Sor key & direction pair that are separated by a comma.'
+        :desc => 'Sort key (Descending), or sort key & direction pair that are separated by a comma.'
       class_option :limit,       :aliases => '-l', :type => :numeric,
         :desc => 'Number of tweets.'
 
@@ -65,6 +65,7 @@ module Creepy
       def build_options
         if options[:sort]
           key, direction = *options[:sort].split(',')
+          direction = :desc unless direction
           @opts[:sort] = [key, direction]
         end
 
