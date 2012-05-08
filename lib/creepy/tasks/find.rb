@@ -37,24 +37,28 @@ module Creepy
         if options[:screen_name]
           users = options[:screen_name].split(',')
           @sel['user.screen_name'] = {'$in' => users}
+          @col.ensure_index([['user.screen_name', Mongo::ASCENDING]])
         end
 
         if options[:keywords]
           keywords = options[:keywords].split(',')
           @sel['keywords'] = {'$all' => keywords}
           @highlight = Regexp.new('(' + keywords.map {|k| Regexp.escape(k)}.join('|') + ')')
+          @col.ensure_index([['keywords', Mongo::ASCENDING]])
         end
 
         if options[:text]
           text = options[:text]
           @sel['text'] = {'$regex' => text}
           @highlight = Regexp.new('(' + text + ')')
+          @col.ensure_index([['text', Mongo::ASCENDING]])
         end
 
         if options[:deleted]
           sel = {'delete.status' => {'$exists' => true}}
           deleted_ids = @db['delete'].find(sel).to_a.map {|s| s['delete']['status']['id']}
           @sel['id'] = {'$in' => deleted_ids}
+          @col.ensure_index([['id', Mongo::DESCENDING]])
         end
       end
 
