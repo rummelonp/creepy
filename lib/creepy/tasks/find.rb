@@ -28,7 +28,7 @@ module Creepy
       def setup
         @db = Creepy.config.mongo.db
         @col = @db['status']
-        @sel = {}
+        @sel = {'text' => {'$exists' => true}}
         @opts = {}
         @highlight = nil
       end
