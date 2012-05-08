@@ -227,6 +227,15 @@ adapter.on でイベントごとの処理をカスタマイズすることも出
     end
     stream.hooks << event_hook
 
+### 自分で hook を書く
+
+status を受け取る call メソッドか実装されたクラスか lambda / proc で処理が書ける
+
+     # 標準出力に受け取ったステータスを表示
+     stream.hooks << lambda do |status|
+       puts status.inspect
+     end
+
 ## ツイートの検索
 
     $ ./creepy.rb find --help
@@ -256,15 +265,6 @@ adapter.on でイベントごとの処理をカスタマイズすることも出
 例えば id の降順にしたい場合は id,desc と指定する
 
 --limit で検索するツイートの最大数を指定
-
-### 自分で hook を書く
-
-status を受け取る call メソッドか実装されたクラスか lambda / proc で処理が書ける
-
-     # 標準出力に受け取ったステータスを表示
-     stream.hooks << lambda do |status|
-       puts status.inspect
-     end
 
 ## コピーライト
 
