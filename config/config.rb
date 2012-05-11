@@ -10,14 +10,6 @@ Creepy.configure do |config|
   accounts_file = File.join(current, 'accounts.yml')
   accounts = Hashie::Mash.new(YAML.load_file(accounts_file))
 
-  ## Logger の設定
-  log_dir = File.join(root, 'log')
-  log_file = File.join(log_dir, 'creepy.log')
-  config.logger = Logger.new(log_file)
-  config.logger.progname = Creepy
-  config.logger.level = Logger::DEBUG
-  config.logger.formatter = Logger::Formatter.new
-
   ## Twitter アカウントの設定
   config.twitter do |twitter|
     twitter.consumer_key       = accounts.twitter.consumer_key
@@ -68,8 +60,7 @@ Creepy.configure do |config|
         keyword.notifies << Creepy::Notifies::ImKayacCom.new
 
         ## ログに保存
-        log_file = File.join(log_dir, 'creepy.keyword.log')
-        logger = Logger.new(log_file)
+        logger = Creepy::SimpleLogger.new('creepy.keyword.log')
         keyword.notifies << lambda do |title, message, options = {}|
           logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
         end
@@ -93,8 +84,7 @@ Creepy.configure do |config|
         adapter.notifies << Creepy::Notifies::ImKayacCom.new
 
         ## ログに保存
-        log_file = File.join(log_dir, 'creepy.event.log')
-        logger = Logger.new(log_file)
+        logger = Creepy::SimpleLogger.new('creepy.event.log')
         adapter.notifies << lambda do |title, message, options = {}|
           logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
         end
