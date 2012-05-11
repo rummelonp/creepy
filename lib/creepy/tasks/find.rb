@@ -26,7 +26,7 @@ module Creepy
         :desc => 'Number of tweets.'
 
       def setup
-        @db = Creepy.config.mongo.db
+        @db = Creepy.db
         @col = @db['status']
         @sel = {'text' => {'$exists' => true}}
         @opts = {}
