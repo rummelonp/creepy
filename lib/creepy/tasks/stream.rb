@@ -20,12 +20,12 @@ module Creepy
 
       def setup
         config  = Creepy.config
-        twitter = config.twitter
-        @client = Twitter.new(twitter)
-        @stream = UserStream.client(twitter)
-        @logger = config.logger
+        @client = Creepy.client
+        @stream = Creepy.stream
         @hooks  = self.class.config.hooks  || []
         @params = self.class.config.params || {}
+        @logger = config.logger
+        twitter = config.twitter
         twitter.credentials ||= @client.verify_credentials
         tee :info, "Stream#setup: read config"
       rescue

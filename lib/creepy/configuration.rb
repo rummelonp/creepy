@@ -45,4 +45,14 @@ module Creepy
   end
 
   extend Configuration
+
+  def twitter(options = {})
+    Twitter.new(config.twitter.to_hash.merge(options))
+  end
+  alias_method :client, :twitter
+
+  def user_stream(options = {})
+    UserStream.client(config.twitter.to_hash.merge(options))
+  end
+  alias_method :stream, :user_stream
 end
