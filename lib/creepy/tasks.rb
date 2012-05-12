@@ -17,3 +17,4 @@ end
 require 'creepy/tasks/base'
 require 'creepy/tasks/cli'
 Dir[File.dirname(__FILE__) + '/tasks/*.rb'].each {|f| require f}
+Dir[Creepy.root + '/tasks/*.rb'].each {|f| require f}
