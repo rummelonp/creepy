@@ -66,15 +66,6 @@ module Creepy
       rescue
         tee :error, "Stream#read: #{$!.message} (#{$!.class})"
       end
-
-      def tee(level, message)
-        if [:error, :warn, :fatal].include?(level)
-          shell.error message
-        else
-          shell.say message
-        end
-        @logger.send level, message unless @logger.nil?
-      end
     end
   end
 end
