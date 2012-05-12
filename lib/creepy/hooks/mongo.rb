@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
 
 module Creepy
+  register_default do |config|
+    config.mongo do |mongo|
+      mongo.set_default :host,      'localhost'
+      mongo.set_default :port,      27017
+      mongo.set_default :db_name,   'creepy'
+      mongo.set_default :connection, nil
+      mongo.set_default :db,         nil
+    end
+  end
+
   module Hooks
     module Mongo
       extend self

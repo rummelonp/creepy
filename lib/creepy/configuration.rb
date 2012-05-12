@@ -7,21 +7,17 @@ class Module
 end
 
 module Creepy
-  extend self
+  class << self
+    def defaults
+      @defaults ||= []
+    end
 
-  def root
-    File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
-  end
-
-  def defaults
-    @defaults ||= []
-  end
-
-  def reload_config!
-    configatron.reset!
-    defaults.each {|d| d.call}
-    config_path = File.join(root, 'config', 'config.rb')
-    load config_path
+    def reload_config!
+      configatron.reset!
+      defaults.each {|d| d.call}
+      config_path = File.join(root, 'config', 'config.rb')
+      load config_path
+    end
   end
 
   module Configuration

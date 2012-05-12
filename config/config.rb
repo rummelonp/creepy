@@ -10,29 +10,12 @@ Creepy.configure do |config|
   accounts_file = File.join(current, 'accounts.yml')
   accounts = Hashie::Mash.new(YAML.load_file(accounts_file))
 
-  ## Logger の設定
-  log_dir = File.join(root, 'log')
-  log_file = File.join(log_dir, 'creepy.log')
-  config.logger = Logger.new(log_file)
-  config.logger.progname = Creepy
-  config.logger.level = Logger::DEBUG
-  config.logger.formatter = Logger::Formatter.new
-
   ## Twitter アカウントの設定
   config.twitter do |twitter|
     twitter.consumer_key       = accounts.twitter.consumer_key
     twitter.consumer_secret    = accounts.twitter.consumer_secret
     twitter.oauth_token        = accounts.twitter.oauth_token
     twitter.oauth_token_secret = accounts.twitter.oauth_token_secret
-  end
-
-  ## Mongo の設定
-  config.mongo do |mongo|
-    mongo.host       = 'localhost'
-    mongo.port       = 27017
-    mongo.db_name    = 'creepy'
-    mongo.connection = Mongo::Connection.new(mongo.host, mongo.port)
-    mongo.db         = mongo.connection.db(mongo.db_name)
   end
 
   ## 通知の設定
@@ -53,7 +36,7 @@ Creepy.configure do |config|
       stream.params[:replies] = :all
 
       ## MongoDB に保存
-      stream.hooks << Creepy::Hooks::Mongo.with_mecab(config.mongo.db)
+      stream.hooks << Creepy::Hooks::Mongo.with_mecab(Creepy.db)
 
       ## Keyword 通知
       stream.hooks << Creepy::Hooks::Keyword.new do |keyword|
@@ -61,15 +44,14 @@ Creepy.configure do |config|
         keyword.exclude << /^.*(RT|QT):? @[\w]+.*$/i
         keyword.hooks << lambda do |keyword, status|
           status.keyword = keyword
-          config.mongo.db.collection('keyword').insert(status)
+          Creepy.db.collection('keyword').insert(status)
         end
 
         ## im.kayac.com に通知
         keyword.notifies << Creepy::Notifies::ImKayacCom.new
 
         ## ログに保存
-        log_file = File.join(log_dir, 'creepy.keyword.log')
-        logger = Logger.new(log_file)
+        logger = Creepy::SimpleLogger.new('creepy.keyword.log')
         keyword.notifies << lambda do |title, message, options = {}|
           logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
         end
@@ -93,8 +75,7 @@ Creepy.configure do |config|
         adapter.notifies << Creepy::Notifies::ImKayacCom.new
 
         ## ログに保存
-        log_file = File.join(log_dir, 'creepy.event.log')
-        logger = Logger.new(log_file)
+        logger = Creepy::SimpleLogger.new('creepy.event.log')
         adapter.notifies << lambda do |title, message, options = {}|
           logger.info "#{Time.now} #{title}: #{message.gsub(/\n/, ' ')}"
         end
