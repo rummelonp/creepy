@@ -38,14 +38,4 @@ module Creepy
       end
     end
   end
-
-  def connection
-    mongo = config.mongo
-    mongo.connection ||= ::Mongo::Connection.new(mongo.host, mongo.port)
-  end
-
-  def db
-    mongo = config.mongo
-    mongo.db ||= connection.db(mongo.db_name)
-  end
 end

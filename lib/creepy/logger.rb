@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
 module Creepy
-  def log_dir
-    @log_dir ||= File.join(Creepy.root, 'log')
-  end
-
   module Logger
     extend self
 
@@ -29,9 +25,5 @@ module Creepy
 
   register_default do |config|
     config.set_default :logger, Creepy::Logger.new('creepy.log')
-  end
-
-  def logger
-    config.logger
   end
 end

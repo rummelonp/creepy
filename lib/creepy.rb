@@ -2,6 +2,7 @@
 
 module Creepy
   require 'creepy/configuration'
+  require 'creepy/helper'
   require 'creepy/logger'
   require 'creepy/tasks'
   require 'creepy/hooks'
