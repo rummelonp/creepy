@@ -3,7 +3,7 @@
 module Creepy
   module Hooks
     class Keyword
-      attr_accessor :include, :exclude, :hooks, :formatter, :notifies, :ignore_self
+      attr_accessor :include, :exclude, :hooks, :formatter, :notifies, :ignore_self, :credentials
 
       def initialize(options = {}, &block)
         @include     = options.fetch :include,     []
@@ -34,10 +34,6 @@ module Creepy
       private
       def yourself?(screen_name)
         credentials.screen_name == screen_name
-      end
-
-      def credentials
-        Creepy.config.twitter.credentials
       end
 
       module Formatter

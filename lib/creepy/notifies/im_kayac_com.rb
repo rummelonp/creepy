@@ -9,14 +9,7 @@ module Creepy
 
       extend Creepy::Configuration
 
-      register_default do |im_kayac_com|
-        im_kayac_com.set_default :username, nil
-        im_kayac_com.set_default :password, nil
-        im_kayac_com.set_default :sig_key,  nil
-      end
-
       def initialize(options = {})
-        options = self.class.config.to_hash.merge(options)
         @username = options[:username]
         @password = options[:password]
         @sig_key  = options[:sig_key]

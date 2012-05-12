@@ -6,6 +6,10 @@ module Creepy
       File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
     end
 
+    def accounts
+      YAML.load_file(File.join(root, 'config', 'accounts.yml'))
+    end
+
     def log_dir
       File.join(Creepy.root, 'log')
     end
@@ -25,14 +29,18 @@ module Creepy
     end
 
     def twitter(options = {})
-      Twitter.new(config.twitter.to_hash.merge(options))
+      Twitter.new(accounts[:twitter].merge(options))
     end
     alias_method :client, :twitter
 
     def user_stream(options = {})
-      UserStream.client(config.twitter.to_hash.merge(options))
+      UserStream.client(accounts[:twitter].merge(options))
     end
     alias_method :stream, :user_stream
+
+    def im_kayac_com(options = {})
+      Creepy::Notifies::ImKayacCom.new(accounts[:im_kayac_com].merge(options))
+    end
   end
 
   extend Helper
