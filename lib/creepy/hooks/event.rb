@@ -3,7 +3,7 @@
 module Creepy
   module Hooks
     class Event
-      attr_accessor :adapter
+      attr_accessor :adapter, :credentials
 
       def self.with_adapter(&block)
         new(Adapter.new(&block))
@@ -35,10 +35,6 @@ module Creepy
       private
       def yourself?(screen_name)
         credentials.screen_name == screen_name
-      end
-
-      def credentials
-        Creepy.config.twitter.credentials
       end
 
       class Adapter

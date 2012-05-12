@@ -9,10 +9,6 @@ module Creepy
 
       extend Creepy::Configuration
 
-      Creepy.register_default do |config|
-        config.twitter.credentials = nil
-      end
-
       register_default do |stream|
         stream.set_default :params, {}
         stream.set_default :hooks,  []
@@ -25,8 +21,10 @@ module Creepy
         @hooks  = self.class.config.hooks  || []
         @params = self.class.config.params || {}
         @logger = config.logger
-        twitter = config.twitter
-        twitter.credentials ||= @client.verify_credentials
+        @credentials = @client.verify_credentials
+        @hooks.each do |h|
+          h.credentials = @credentials if h.respond_to? :credentials=
+        end
         tee :info, "Stream#setup: read config"
       rescue
         tee :warn, "Stream#setup: #{$!.message} (#{$!.class})"
